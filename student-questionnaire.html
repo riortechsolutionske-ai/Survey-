@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F2F3F5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
+  <title>Student portal experience questionnaire</title>
+  <style>
+/* Neutral research questionnaire. Mobile-first; system fonts so nothing blocks rendering.
+   The 0-10 scale is deliberately one colour: no red-to-green gradient that could nudge answers. */
+
+:root {
+  --bg: #F2F3F5;
+  --surface: #FFFFFF;
+  --ink: #1B1E24;
+  --muted: #5B6270;
+  --line: #DADDE3;
+  --line-strong: #AEB4C0;
+  --accent: #2C3F7A;
+  --accent-soft: #E7EAF4;
+  --on-accent: #FFFFFF;
+  --danger: #B42318;
+  --danger-soft: #FDF0EE;
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111318;
+    --surface: #1A1D24;
+    --ink: #ECEEF2;
+    --muted: #A3AAB8;
+    --line: #2C313B;
+    --line-strong: #4A5261;
+    --accent: #9DB4F0;
+    --accent-soft: #232A3D;
+    --on-accent: #0E1526;
+    --danger: #FF8A80;
+    --danger-soft: #2E1B1A;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.5 var(--font);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Top bar + progress ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
+}
+.topbar-inner { max-width: 640px; margin: 0 auto; padding: 10px 16px 12px; }
+.topbar-title { margin: 0 0 6px; font-weight: 650; letter-spacing: -0.01em; }
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.progress { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+/* ---------- Layout ---------- */
+.shell { width: 100%; max-width: 640px; margin: 0 auto; padding: 12px 12px 24px; flex: 1; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 16px;
+}
+@media (min-width: 560px) {
+  .shell { padding: 24px 16px 40px; }
+  .card { padding: 32px 32px 28px; }
+}
+
+.section { display: none; }
+.section.is-active { display: block; animation: enter-forward 0.28s ease-out both; }
+.section.is-active.back { animation-name: enter-back; }
+@keyframes enter-forward { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@keyframes enter-back    { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+
+.section h2 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  outline: none;
+}
+.lead { margin: 0 0 20px; color: var(--muted); max-width: 60ch; }
+.section h2 + .q { margin-top: 20px; }
+
+/* ---------- Questions ---------- */
+.q { margin: 0 0 28px; scroll-margin-top: 130px; }
+.q:last-of-type { margin-bottom: 8px; }
+.qlabel { margin: 0 0 10px; font-weight: 600; line-height: 1.4; display: block; }
+.qnum { color: var(--muted); font-weight: 500; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.opt {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  vertical-align: 1px;
+}
+
+input[type="text"], select, textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  font: inherit;
+  font-size: 1rem; /* 16px: stops iOS zooming into fields */
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  appearance: none;
+  -webkit-appearance: none;
+}
+textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+select {
+  padding-right: 40px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 21px, calc(100% - 14px) 21px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.8; }
+input[type="text"]:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.note {
+  margin: 24px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+/* ---------- 0-10 rating scale ---------- */
+.scale { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.pt { position: relative; display: block; }
+.pt input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.pt span {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s, transform 0.12s;
+}
+.pt input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  transform: scale(1.04);
+}
+.pt input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (hover: hover) {
+  .pt input:not(:checked):hover + span { border-color: var(--accent); background: var(--accent-soft); }
+}
+.ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.ends span:last-child { text-align: right; }
+
+/* Wider screens: one connected strip, like a ruler */
+@media (min-width: 560px) {
+  .scale {
+    grid-template-columns: repeat(11, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--line-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .pt span { border: 0; border-right: 1px solid var(--line); border-radius: 0; }
+  .pt:last-child span { border-right: 0; }
+  .pt input:checked + span { transform: none; }
+  .pt input:focus-visible + span { outline-offset: -4px; }
+}
+
+/* ---------- Single-choice list ---------- */
+.choices { display: grid; gap: 8px; }
+.choice { position: relative; display: block; }
+.choice input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.choice span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-weight: 500;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.choice span::before {
+  content: "";
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  transition: border-color 0.12s, box-shadow 0.12s, background-color 0.12s;
+}
+.choice input:checked + span { border-color: var(--accent); background: var(--accent-soft); }
+.choice input:checked + span::before { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--surface); }
+.choice input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (hover: hover) {
+  .choice input:not(:checked):hover + span { border-color: var(--accent); }
+}
+
+/* ---------- Validation ---------- */
+.err { margin: 8px 0 0; color: var(--danger); font-size: 0.875rem; font-weight: 500; }
+.q.has-error input[type="text"], .q.has-error select { border-color: var(--danger); }
+.q.has-error .scale, .q.has-error .choices {
+  outline: 2px solid var(--danger);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+@media (min-width: 560px) { .q.has-error .scale { outline-offset: 2px; } }
+
+/* ---------- Buttons + action bar ---------- */
+.actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.actions-inner { max-width: 640px; margin: 0 auto; padding: 12px 16px; }
+.actions-row { display: flex; gap: 10px; }
+.status {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.btn {
+  min-height: 52px;
+  padding: 0 22px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition: opacity 0.12s, background-color 0.12s;
+}
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-primary { flex: 1; background: var(--accent); color: var(--on-accent); }
+.btn-secondary { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn-quiet { min-height: 40px; padding: 0 14px; background: transparent; color: var(--accent); border-color: var(--line-strong); font-weight: 600; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+@media (hover: hover) {
+  .btn-primary:not(:disabled):hover { opacity: 0.92; }
+  .btn-secondary:not(:disabled):hover, .btn-quiet:hover { background: var(--accent-soft); }
+}
+
+/* ---------- Confirmation ---------- */
+.confirmation { text-align: center; padding-top: 36px; padding-bottom: 32px; }
+.confirmation .tick { color: var(--accent); }
+.confirmation h1 { margin: 12px 0 6px; font-size: 1.75rem; letter-spacing: -0.02em; outline: none; }
+.confirmation p { margin: 0 auto 16px; max-width: 46ch; }
+.muted { color: var(--muted); }
+.rid {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 8px 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.rid-label { color: var(--muted); font-size: 0.875rem; }
+.rid-value { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 1.125rem; font-weight: 700; letter-spacing: 0.04em; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+  <header class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <p class="topbar-title">Student portal experience</p>
+      <div class="progress-meta">
+        <span id="stepLabel">Section 1 of 6</span>
+        <span id="pctLabel">0% complete</span>
+      </div>
+      <div class="progress" id="progress" role="progressbar" aria-label="Questionnaire completion"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <noscript><p class="note">This questionnaire needs JavaScript. Please enable it and reload the page.</p></noscript>
+
+    <form id="survey" class="card" novalidate autocomplete="on">
+      <div id="sections"></div>
+    </form>
+
+    <section id="confirmation" class="card confirmation" hidden aria-live="polite">
+      <svg class="tick" viewBox="0 0 48 48" width="56" height="56" aria-hidden="true">
+        <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M14 25l7 7 13-15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h1 id="confirmTitle" tabindex="-1">Thank you!</h1>
+      <p>Your response has been successfully recorded.</p>
+      <div class="rid">
+        <span class="rid-label">Response ID</span>
+        <span class="rid-value" id="responseId"></span>
+        <button type="button" class="btn btn-quiet" id="copyId">Copy</button>
+      </div>
+      <p class="muted">Your feedback will help us understand students' experiences with current student portals.</p>
+    </section>
+  </main>
+
+  <footer class="actions" id="actions">
+    <div class="actions-inner">
+      <p class="status" id="status" role="alert" hidden></p>
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary" id="backBtn" hidden>Back</button>
+        <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+        <button type="button" class="btn btn-primary" id="submitBtn" hidden>Submit</button>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+// ================= 1. FIREBASE CONFIG (edit this) =================
+// Firebase WEB app configuration.
+//
+// Firebase Console -> Project settings -> Your apps -> Web app -> "SDK setup and configuration".
+//
+// These values identify your project; they are NOT secrets and are meant to be public.
+// What protects your data is firestore.rules (respondents can only create, never read).
+// Never put Admin SDK / service-account keys or any WhatsApp credentials in this folder.
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA_2KiEBQFhu5zV3-GFL3QPZFKj1OkrFaQ",
+  authDomain: "portal-survey-5381f.firebaseapp.com",
+  projectId: "portal-survey-5381f",
+  storageBucket: "portal-survey-5381f.firebasestorage.app",
+  messagingSenderId: "9988119407",
+  appId: "1:9988119407:web:ca89ff0f444a75bf0f269a",
+};
+
+const SDK_VERSION = "10.14.1";
+
+// ================= 2. QUESTIONNAIRE + LOGIC =================
+// Questionnaire definition + pure logic (validation, payload building).
+// No DOM and no Firebase in this file, so it is easy to read, edit and test.
+
+const SCHEMA_VERSION = 1;
+
+// Prefix of the response ID shown on the confirmation screen.
+// If you change it, update the regex in firestore.rules as well.
+const RESPONSE_ID_PREFIX = "SPR";
+
+const YEAR_OPTIONS = [
+  "Year 1",
+  "Year 2",
+  "Year 3",
+  "Year 4",
+  "Year 5",
+  "Year 6 or above",
+  "Postgraduate (Master's)",
+  "Postgraduate (Doctorate)",
+  "Other",
+];
+
+// Stored as a label (readable) and a score 1-7 (analysable).
+const ALL_IN_ONE_OPTIONS = [
+  { label: "Extremely convenient", score: 7 },
+  { label: "Very convenient", score: 6 },
+  { label: "Convenient", score: 5 },
+  { label: "Neutral", score: 4 },
+  { label: "Not very convenient", score: 3 },
+  { label: "Not convenient", score: 2 },
+  { label: "Not convenient at all", score: 1 },
+];
+
+const GENERAL_ENDS = ["Very poor / difficult", "Excellent / extremely easy"];
+
+const rating = (num, field, text, ends = GENERAL_ENDS) => ({
+  type: "rating", num, field, text, low: ends[0], high: ends[1], required: true,
+});
+const longText = (num, field, text, placeholder = "") => ({
+  type: "longText", num, field, text, placeholder, required: false, maxLength: 500,
+});
+
+const SECTIONS = [
+  {
+    id: "about",
+    title: "About you",
+    intro:
+      "This short questionnaire asks about your experience with your current student portal. " +
+      "It takes about 2\u20134 minutes, and there are no right or wrong answers. " +
+      "Questions marked Optional can be skipped; all others need an answer.",
+    questions: [
+      { type: "shortText", field: "studentName", label: "Student name", required: true,
+        autocomplete: "name", maxLength: 120, missing: "Enter your name." },
+      { type: "shortText", field: "institutionName", label: "Institution name", required: true,
+        autocomplete: "organization", maxLength: 150, missing: "Enter the name of your institution." },
+      { type: "shortText", field: "course", label: "Course / Programme", required: false,
+        maxLength: 150 },
+      { type: "select", field: "yearOfStudy", label: "Year of study", required: false,
+        options: YEAR_OPTIONS },
+    ],
+    note:
+      "Privacy: your name and institution are collected for research purposes only and will not be " +
+      "displayed publicly. Your answers are stored securely and cannot be seen by other respondents. " +
+      "Taking part is voluntary.",
+  },
+  {
+    id: "general",
+    title: "General portal experience",
+    intro: "Rate your current student portal from 0 to 10.",
+    questions: [
+      rating(1, "navigationRating", "How easy is the current student portal to navigate?"),
+      rating(2, "informationAccessRating", "How easy is it to find the information you need?"),
+      rating(3, "designRating", "How would you rate the overall design of the portal?"),
+      rating(4, "academicInformationRating", "How easy is it to access your academic information through the portal?"),
+      rating(5, "informationReliabilityRating", "How reliable do you find the information displayed on the portal?"),
+      rating(6, "overallSatisfactionRating", "How satisfied are you with the current student portal overall?"),
+    ],
+  },
+  {
+    id: "timetable",
+    title: "Timetable",
+    questions: [
+      rating(7, "timetableAccessRating", "How easy is it to access your timetable?", ["Very difficult", "Extremely easy"]),
+      rating(8, "timetableUsefulnessRating", "How useful is the timetable feature?", ["Not useful at all", "Extremely useful"]),
+      rating(9, "timetableClarityRating", "How clear and easy to understand is the timetable?", ["Very unclear", "Extremely clear"]),
+      longText(10, "timetableImprovement", "What would you improve about the current timetable?"),
+    ],
+  },
+  {
+    id: "notifications",
+    title: "Notifications",
+    questions: [
+      rating(11, "notificationUsefulnessRating", "How useful are the notifications provided by the current portal?", ["Not useful at all", "Extremely useful"]),
+      rating(12, "notificationTimelinessRating", "How timely are the notifications you receive?", ["Never timely", "Always timely"]),
+      rating(13, "notificationInformationRating", "How well do the notifications keep you informed about important school activities and updates?", ["Not at all", "Extremely well"]),
+      longText(14, "usefulNotificationTypes", "What type of notifications would you find most useful?"),
+    ],
+  },
+  {
+    id: "experience",
+    title: "Student experience",
+    questions: [
+      rating(15, "activityManagementRating", "How much does the current student portal make managing your student activities easier?", ["Not at all", "Significantly easier"]),
+      rating(16, "continuedUseRating", "How likely are you to continue using the current portal if given the choice?", ["Extremely unlikely", "Extremely likely"]),
+      longText(17, "likedMost", "What do you like most about the current student portal?"),
+      longText(18, "biggestProblem", "What is the biggest problem or difficulty you experience when using the current portal?"),
+      longText(19, "desiredImprovement", "What feature would you most like to see improved?"),
+      longText(20, "desiredFeature", "What feature would you like the portal to have that it currently does not have?"),
+    ],
+  },
+  {
+    id: "one-place",
+    title: "Everything in one place",
+    questions: [
+      { type: "choice", num: 21, field: "allInOneConvenience", required: true,
+        text: "Would it be convenient for you to have everything you need as a student in one place \u2014 including a student group chat, class notifications, your personalized timetable, and other important student information?",
+        options: ALL_IN_ONE_OPTIONS.map((o) => o.label) },
+      longText(22, "additionalFeature", "What other feature would make having everything in one place more useful to you?"),
+      longText(23, "additionalComments", "Any other comments or suggestions?"),
+    ],
+  },
+];
+
+const QUESTIONS = SECTIONS.flatMap((s) => s.questions);
+const REQUIRED_FIELDS = QUESTIONS.filter((q) => q.required).map((q) => q.field);
+
+function isAnswered(q, value) {
+  if (q.type === "rating") return Number.isInteger(value) && value >= 0 && value <= 10;
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function missingMessage(q) {
+  if (q.missing) return q.missing;
+  if (q.type === "rating") return "Select a rating from 0 to 10.";
+  return "Choose one option.";
+}
+
+/** Returns { fieldName: message } for every required question that is unanswered. */
+function validate(answers, sectionIndex = null) {
+  const scope = sectionIndex === null ? QUESTIONS : SECTIONS[sectionIndex].questions;
+  const errors = {};
+  for (const q of scope) {
+    if (q.required && !isAnswered(q, answers[q.field])) errors[q.field] = missingMessage(q);
+  }
+  return errors;
+}
+
+const normalise = (s) => s.trim().toLowerCase().replace(/\s+/g, " ");
+
+/**
+ * Builds the Firestore document (without submittedAt, which is a server timestamp
+ * added at write time). Ratings are integers; text is trimmed.
+ * institutionKey / courseKey are lower-cased copies for reliable grouping later.
+ */
+function buildPayload(answers) {
+  const doc = {};
+  for (const q of QUESTIONS) {
+    const v = answers[q.field];
+    doc[q.field] = q.type === "rating" ? v : String(v ?? "").trim().slice(0, q.maxLength ?? 600);
+  }
+  const option = ALL_IN_ONE_OPTIONS.find((o) => o.label === doc.allInOneConvenience);
+  doc.allInOneConvenienceScore = option ? option.score : null;
+  doc.institutionKey = normalise(doc.institutionName);
+  doc.courseKey = normalise(doc.course);
+  doc.schemaVersion = SCHEMA_VERSION;
+  return doc;
+}
+
+// ================= 3. APP =================
+const SAVE_TIMEOUT_MS = 15000;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const $ = (id) => document.getElementById(id);
+const els = {
+  form: $("survey"), sections: $("sections"), confirmation: $("confirmation"),
+  actions: $("actions"), status: $("status"),
+  back: $("backBtn"), next: $("nextBtn"), submit: $("submitBtn"),
+  stepLabel: $("stepLabel"), pctLabel: $("pctLabel"),
+  progress: $("progress"), fill: $("progressFill"),
+  responseId: $("responseId"), copyId: $("copyId"), confirmTitle: $("confirmTitle"),
+};
+
+const answers = {};          // field -> integer (ratings) or string
+let current = 0;             // index of the visible section
+let submitting = false;
+let pendingWrite = null;     // { id, sig, promise }: lets a retry reuse the same response ID
+
+/* ------------------------------------------------------------------ */
+/* Rendering                                                           */
+/* ------------------------------------------------------------------ */
+
+function h(tag, attrs = {}, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of children.flat()) {
+    if (c == null || c === false) continue;
+    el.append(c.nodeType ? c : document.createTextNode(c));
+  }
+  return el;
+}
+
+const errorEl = (field) => h("p", { class: "err", id: `${field}-err`, hidden: true });
+const optionalTag = (q) => (q.required ? null : h("span", { class: "opt" }, "Optional"));
+
+function questionLabel(q, tag = "p") {
+  return h(tag, { class: "qlabel", id: `${q.field}-label`, for: tag === "label" ? `f-${q.field}` : null },
+    q.num ? h("span", { class: "qnum" }, `${q.num}.`) : null,
+    q.text ?? q.label,
+    optionalTag(q));
+}
+
+function renderQuestion(q) {
+  const wrap = (...kids) => h("div", { class: "q", "data-field": q.field }, ...kids);
+
+  if (q.type === "shortText") {
+    return wrap(
+      questionLabel(q, "label"),
+      h("input", { type: "text", id: `f-${q.field}`, name: q.field, maxlength: q.maxLength,
+        autocomplete: q.autocomplete ?? "off", "aria-describedby": `${q.field}-err` }),
+      errorEl(q.field));
+  }
+
+  if (q.type === "select") {
+    return wrap(
+      questionLabel(q, "label"),
+      h("select", { id: `f-${q.field}`, name: q.field },
+        h("option", { value: "" }, "Select\u2026"),
+        q.options.map((o) => h("option", { value: o }, o))),
+      errorEl(q.field));
+  }
+
+  if (q.type === "longText") {
+    return wrap(
+      questionLabel(q, "label"),
+      h("textarea", { id: `f-${q.field}`, name: q.field, maxlength: q.maxLength, rows: 3,
+        placeholder: q.placeholder || "Type your answer\u2026", "aria-describedby": `${q.field}-err` }),
+      errorEl(q.field));
+  }
+
+  if (q.type === "rating") {
+    const points = Array.from({ length: 11 }, (_, i) =>
+      h("label", { class: "pt" },
+        h("input", { type: "radio", name: q.field, value: String(i), "aria-label": String(i) }),
+        h("span", {}, String(i))));
+    return wrap(
+      questionLabel(q),
+      h("div", { role: "radiogroup", "aria-labelledby": `${q.field}-label`, "aria-describedby": `${q.field}-err` },
+        h("div", { class: "scale" }, points),
+        h("div", { class: "ends" },
+          h("span", {}, `0 = ${q.low}`),
+          h("span", {}, `10 = ${q.high}`))),
+      errorEl(q.field));
+  }
+
+  if (q.type === "choice") {
+    return wrap(
+      questionLabel(q),
+      h("div", { class: "choices", role: "radiogroup", "aria-labelledby": `${q.field}-label`, "aria-describedby": `${q.field}-err` },
+        q.options.map((o) => h("label", { class: "choice" },
+          h("input", { type: "radio", name: q.field, value: o }),
+          h("span", {}, o)))),
+      errorEl(q.field));
+  }
+}
+
+function renderSections() {
+  SECTIONS.forEach((s, i) => {
+    els.sections.append(
+      h("section", { class: "section", "data-index": i, "aria-labelledby": `sec-${s.id}` },
+        h("h2", { id: `sec-${s.id}`, tabindex: "-1" }, s.title),
+        s.intro ? h("p", { class: "lead" }, s.intro) : null,
+        s.questions.map(renderQuestion),
+        s.note ? h("p", { class: "note" }, s.note) : null));
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* State, progress, navigation                                         */
+/* ------------------------------------------------------------------ */
+
+const questionByField = Object.fromEntries(QUESTIONS.map((q) => [q.field, q]));
+
+function updateProgress() {
+  const done = REQUIRED_FIELDS.filter((f) => isAnswered(questionByField[f], answers[f])).length;
+  const pct = Math.round((done / REQUIRED_FIELDS.length) * 100);
+  els.fill.style.width = `${pct}%`;
+  els.progress.setAttribute("aria-valuenow", String(pct));
+  els.pctLabel.textContent = `${pct}% complete`;
+  els.stepLabel.textContent = `Section ${current + 1} of ${SECTIONS.length}`;
+}
+
+function showSection(index, direction = "forward") {
+  current = index;
+  document.querySelectorAll(".section").forEach((sec) => {
+    const active = Number(sec.dataset.index) === index;
+    sec.classList.toggle("is-active", active);
+    sec.classList.toggle("back", active && direction === "back");
+  });
+  const last = index === SECTIONS.length - 1;
+  els.back.hidden = index === 0;
+  els.next.hidden = last;
+  els.submit.hidden = !last;
+  clearStatus();
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  document.querySelector(`.section[data-index="${index}"] h2`).focus({ preventScroll: true });
+}
+
+function setStatus(msg) { els.status.textContent = msg; els.status.hidden = false; }
+function clearStatus() { els.status.hidden = true; els.status.textContent = ""; }
+
+/* ------------------------------------------------------------------ */
+/* Validation display                                                  */
+/* ------------------------------------------------------------------ */
+
+function showErrors(errors) {
+  for (const [field, msg] of Object.entries(errors)) {
+    const box = document.querySelector(`.q[data-field="${field}"]`);
+    box.classList.add("has-error");
+    const err = $(`${field}-err`);
+    err.textContent = msg;
+    err.hidden = false;
+    box.querySelectorAll("input[type=text], select").forEach((c) => c.setAttribute("aria-invalid", "true"));
+  }
+}
+
+function clearError(field) {
+  const box = document.querySelector(`.q[data-field="${field}"]`);
+  if (!box || !box.classList.contains("has-error")) return;
+  box.classList.remove("has-error");
+  $(`${field}-err`).hidden = true;
+  box.querySelectorAll("[aria-invalid]").forEach((c) => c.removeAttribute("aria-invalid"));
+}
+
+function focusFirstError() {
+  const box = document.querySelector(".section.is-active .q.has-error");
+  if (!box) return;
+  box.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+  box.querySelector("input, select, textarea")?.focus({ preventScroll: true });
+}
+
+/* ------------------------------------------------------------------ */
+/* Input handling: answers live in `answers`, never cleared on error   */
+/* ------------------------------------------------------------------ */
+
+function onFieldChange(e) {
+  const t = e.target;
+  const q = questionByField[t.name];
+  if (!q) return;
+  if (q.type === "rating") {
+    if (!t.checked) return;
+    answers[q.field] = parseInt(t.value, 10);      // stored as an integer
+  } else if (q.type === "choice") {
+    if (!t.checked) return;
+    answers[q.field] = t.value;
+  } else {
+    answers[q.field] = t.value;
+  }
+  clearError(q.field);
+  clearStatus();
+  updateProgress();
+}
+els.form.addEventListener("input", onFieldChange);
+els.form.addEventListener("change", onFieldChange);
+els.form.addEventListener("submit", (e) => e.preventDefault());
+
+els.back.addEventListener("click", () => showSection(current - 1, "back"));
+els.next.addEventListener("click", () => {
+  const errors = validate(answers, current);
+  if (Object.keys(errors).length) {
+    showErrors(errors);
+    setStatus("Some answers are missing. Check the highlighted questions.");
+    focusFirstError();
+    return;
+  }
+  showSection(current + 1, "forward");
+});
+
+/* ------------------------------------------------------------------ */
+/* Firebase (loaded lazily so the page renders immediately)            */
+/* ------------------------------------------------------------------ */
+
+let firebasePromise = null;
+
+function isConfigured() {
+  return !String(firebaseConfig.projectId).startsWith("YOUR_") && !String(firebaseConfig.apiKey).startsWith("YOUR_");
+}
+
+function loadFirebase() {
+  if (!firebasePromise) {
+    firebasePromise = (async () => {
+      if (!isConfigured()) throw Object.assign(new Error("Firebase config missing"), { code: "not-configured" });
+      const base = `https://www.gstatic.com/firebasejs/${SDK_VERSION}`;
+      const [app, fs] = await Promise.all([import(`${base}/firebase-app.js`), import(`${base}/firebase-firestore.js`)]);
+      const fbApp = app.initializeApp(firebaseConfig);
+      // Auto-detect long polling helps on campus networks/proxies that block streaming connections.
+      const db = fs.initializeFirestore(fbApp, { experimentalAutoDetectLongPolling: true });
+      return { db, doc: fs.doc, setDoc: fs.setDoc, serverTimestamp: fs.serverTimestamp };
+    })();
+    firebasePromise.catch(() => { firebasePromise = null; });   // allow a retry
+  }
+  return firebasePromise;
+}
+
+// Start downloading the SDK once the page is idle so Submit feels instant.
+(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => {
+  if (isConfigured()) loadFirebase().catch(() => {});
+});
+
+/* ------------------------------------------------------------------ */
+/* Submission                                                          */
+/* ------------------------------------------------------------------ */
+
+// Unambiguous characters (no 0/O, 1/I). 32 symbols, so `byte & 31` is unbiased.
+const ID_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function generateResponseId() {
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  return `${RESPONSE_ID_PREFIX}-${Array.from(bytes, (b) => ID_ALPHABET[b & 31]).join("")}`;
+}
+
+class SaveTimeout extends Error {}
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new SaveTimeout()), ms); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function setSubmitting(on) {
+  submitting = on;
+  els.submit.disabled = on;
+  els.back.disabled = on;
+  els.submit.textContent = on ? "Submitting\u2026" : "Submit";
+}
+
+async function handleSubmit() {
+  if (submitting) return;                              // blocks double taps
+  clearStatus();
+
+  const errors = validate(answers);
+  const fields = Object.keys(errors);
+  if (fields.length) {
+    const firstSection = SECTIONS.findIndex((s) => s.questions.some((q) => q.field === fields[0]));
+    if (firstSection !== current) showSection(firstSection, firstSection < current ? "back" : "forward");
+    showErrors(errors);
+    setStatus(`${fields.length === 1 ? "1 question needs" : `${fields.length} questions need`} an answer. Check the highlighted questions.`);
+    focusFirstError();
+    return;
+  }
+
+  setSubmitting(true);
+  try {
+    const payload = buildPayload(answers);
+    const sig = JSON.stringify(payload);
+
+    // Reuse the same ID/write if the previous attempt only timed out (avoids duplicates).
+    if (!pendingWrite || pendingWrite.sig !== sig) {
+      const fb = await withTimeout(loadFirebase(), SAVE_TIMEOUT_MS);
+      const id = generateResponseId();
+      const promise = fb.setDoc(fb.doc(fb.db, "responses", id), { ...payload, submittedAt: fb.serverTimestamp() });
+      promise.catch(() => {});                          // errors are handled where it is awaited
+      pendingWrite = { id, sig, promise };
+    }
+
+    await withTimeout(pendingWrite.promise, SAVE_TIMEOUT_MS);
+    showConfirmation(pendingWrite.id);
+  } catch (err) {
+    console.error("Submission failed:", err);
+    if (err instanceof SaveTimeout) {
+      setStatus("This is taking longer than expected. Check your connection, then tap Submit again. Your answers are still here.");
+    } else if (err?.code === "not-configured") {
+      pendingWrite = null;
+      setStatus("The questionnaire can't save responses right now. Please tell the researcher.");
+    } else {
+      pendingWrite = null;
+      setStatus("Your response couldn't be saved. Your answers are still here. Tap Submit to try again.");
+    }
+    setSubmitting(false);
+  }
+}
+els.submit.addEventListener("click", handleSubmit);
+
+/* ------------------------------------------------------------------ */
+/* Confirmation                                                        */
+/* ------------------------------------------------------------------ */
+
+function showConfirmation(id) {
+  els.responseId.textContent = id;
+  els.form.reset();                                    // clear the form from the screen
+  Object.keys(answers).forEach((k) => delete answers[k]);
+  pendingWrite = null;
+
+  els.form.hidden = true;
+  els.actions.hidden = true;
+  els.confirmation.hidden = false;
+  els.fill.style.width = "100%";
+  els.progress.setAttribute("aria-valuenow", "100");
+  els.pctLabel.textContent = "Complete";
+  els.stepLabel.textContent = "Submitted";
+  window.scrollTo({ top: 0 });
+  els.confirmTitle.focus({ preventScroll: true });
+}
+
+if (navigator.clipboard) {
+  els.copyId.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(els.responseId.textContent);
+      els.copyId.textContent = "Copied";
+      setTimeout(() => { els.copyId.textContent = "Copy"; }, 2000);
+    } catch { /* clipboard blocked: ignore */ }
+  });
+} else {
+  els.copyId.hidden = true;
+}
+
+/* ------------------------------------------------------------------ */
+
+renderSections();
+showSection(0);
+</script>
+</body>
+</html>
